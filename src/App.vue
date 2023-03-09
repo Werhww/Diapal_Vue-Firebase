@@ -1,6 +1,8 @@
 /* https://www.youtube.com/watch?v=84mhLKUM04E */
 /* Tid: 33:34 start på "Dispaly Todos from FireStore" */
 
+/* https://firebase.google.com/docs/firestore/query-data/get-data?hl=en&authuser=0 */
+/* https://console.firebase.google.com/u/0/project/diapal-firebase/firestore/data/~2Ftodos~2FRm14oBArm3XJHcASzoco */
 
 <script lang="ts">
   import TodoItem from "./components/todoItem.vue";
@@ -29,22 +31,11 @@
 
   /* todo items */
   const todos = ref([
-  
     {
       id: "id1",
-      content: "hello",
+      content: "First todo",
       done: false
     },
-    {
-      id: "id2",
-      content: "world",
-      done: false
-    },
-    {
-      id: "id3",
-      content: "wash hands",
-      done: false
-    } 
   ])
 
   /*add todo */
