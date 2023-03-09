@@ -1,3 +1,7 @@
+/* https://www.youtube.com/watch?v=84mhLKUM04E */
+/* Tid: 33:34 start på "Dispaly Todos from FireStore" */
+
+
 <script lang="ts">
   import TodoItem from "./components/todoItem.vue";
 </script>
