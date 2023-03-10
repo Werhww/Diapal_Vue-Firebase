@@ -6,7 +6,6 @@
 
 <script lang="ts">
   import TodoItem from "./components/todoItem.vue";
-import { isDoExpression } from '@babel/types';
 </script>
 
 <template>
@@ -35,15 +34,19 @@ import { isDoExpression } from '@babel/types';
 </template>
 
 <script setup lang="ts">
+
   /*imports*/
-  import { ref, onMounted } from 'vue'
-  import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc } from "firebase/firestore";
-  import { db } from '@/firebase'
+    import { ref, onMounted } from 'vue'
+    import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, query, orderBy } from "firebase/firestore";
+    import { db } from '@/firebase' 
+    import { getAuth } from "firebase/auth";
 
   /* 
     firebase refs
   */
-  const todosCollectionRef = collection(db, "todos")
+    const todosCollectionRef = collection(db, "todos")
+    const todosCollectionQuery = query(todosCollectionRef, orderBy("date", "desc"));
+
 
   /* todo items */
   const todos = ref([
@@ -51,12 +54,13 @@ import { isDoExpression } from '@babel/types';
   ]) as any
 
   /*add todo */
-  const newTodoContent = ref()
+  const newTodoContent = ref() 
 
   const addTodo = () => {
     addDoc(todosCollectionRef, {
       content: newTodoContent.value,
-      done: false
+      done: false, 
+      date: Date.now()
     });
     newTodoContent.value = '' 
   }
@@ -68,11 +72,11 @@ import { isDoExpression } from '@babel/types';
 
   /* mark todo as done */
   const toggelDone = (id: string) => {
-    const index = todos.value.findIndex((todo: { id: string; } ) => todo.id === id)
+      const index = todos.value.findIndex((todo: { id: string; } ) => todo.id === id)
 
-    updateDoc(doc(todosCollectionRef, id), {
-      done: !todos.value[index].done
-    })
+      updateDoc(doc(todosCollectionRef, id), {
+        done: !todos.value[index].done
+      })
   }
 
   /*
@@ -80,7 +84,7 @@ import { isDoExpression } from '@babel/types';
   */
 
   onMounted(() => {
-    onSnapshot(todosCollectionRef, (querySnapshot:any) => {
+    onSnapshot(todosCollectionQuery, (querySnapshot:any) => {
       const fbTodos:any = []
       querySnapshot.forEach((doc:any) => {
         const todo = {
@@ -91,12 +95,16 @@ import { isDoExpression } from '@babel/types';
         fbTodos.push(todo)
       })
       todos.value = fbTodos
-    })
-
+    }) 
   })
+
+
+  /*************************** Authentication **********************************/
+
+
+  const auth = getAuth();
+  auth.languageCode = 'it';
 </script>
-
-
 
 <style scoped>
   main {
