@@ -1,7 +1,7 @@
 
 <script lang="ts">
     export default {
-        props: ['todo', 'id', 'deleteFunction', 'done', 'markdone'],
+      props: ['todo', 'id', 'deleteFunction', 'done', 'toggelDone'],
     }
 </script>
 
@@ -9,9 +9,15 @@
 <div :id="id" class="todo-card" :class="{ 'background-success-light' : done}">
     <p :class="{ 'text-success' : done}">{{ todo }}</p>
     <div>
-        <button class="button light" @click="markdone(id)"
-          :class="{ 'button-success' : done}">&check;</button>
-        <button class="button danger" @click="deleteFunction(id)">&cross;</button>
+      <button 
+        @click="toggelDone(id)"
+        class="button light"
+        :class="{ 'button-success' : done}"
+      >&check;</button>
+      <button 
+        @click="deleteFunction(id)"
+        class="button danger"
+      >&cross;</button>
     </div>
 </div>
 </template>

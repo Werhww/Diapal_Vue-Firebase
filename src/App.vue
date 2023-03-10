@@ -6,63 +6,94 @@
 
 <script lang="ts">
   import TodoItem from "./components/todoItem.vue";
+import { isDoExpression } from '@babel/types';
 </script>
 
 <template>
   <main>
     <div class="top">
       <h1>Todos</h1>
-      <div>
-        <input type="text" id="" class="todoInput" placeholder="Add a todo">
-        <button class="todoButton" v-on:click="addTodo">Add</button>
-      </div>
+      <form
+        @submit.prevent="addTodo"
+      >
+        <input 
+          v-model="newTodoContent" 
+          type="text"
+          class="todoInput" 
+          placeholder="Add a todo"
+        >
+        <button 
+          :disabled='!newTodoContent'
+          class="todoButton" 
+        >Add</button>
+      </form>
     </div>
     <div class="todos">
-      <TodoItem :id="item.id" :todo="item.content" :done="item.done" :deleteFunction="deleteTodo" :markdone="markDone" v-for="item in todos"/>
+      <TodoItem :id="item.id" :todo="item.content" :done="item.done" :deleteFunction="deleteTodo" :toggelDone="toggelDone" v-for="item in todos"/>
     </div>
   </main>
 </template>
 
 <script setup lang="ts">
   /*imports*/
-  import { ref } from 'vue'
-  import { collection, getDocs } from 'firebase/firestore'
+  import { ref, onMounted } from 'vue'
+  import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc } from "firebase/firestore";
   import { db } from '@/firebase'
+
+  /* 
+    firebase refs
+  */
+  const todosCollectionRef = collection(db, "todos")
 
   /* todo items */
   const todos = ref([
-    {
-      id: "id1",
-      content: "First todo",
-      done: false
-    },
-  ])
+
+  ]) as any
 
   /*add todo */
+  const newTodoContent = ref()
+
   const addTodo = () => {
-    const input = document.querySelector(".todoInput") as HTMLInputElement;
-    const todo = input.value;
-    if(todo){
-      todos.value.push({
-        id: 'uuidv4()',
-        content: todo,
-        done: false
-      })
-      input.value = "";
-    }
+    addDoc(todosCollectionRef, {
+      content: newTodoContent.value,
+      done: false
+    });
+    newTodoContent.value = '' 
   }
 
   /* delete todo */
   const deleteTodo = (id: string) => {
-    todos.value = todos.value.filter(todo => todo.id !== id);
+    deleteDoc(doc(todosCollectionRef, id));
   }
 
   /* mark todo as done */
-  const markDone = (id: string) => {
-    todos.value.filter(todo => todo.id == id)[0].done? 
-      todos.value.filter(todo => todo.id == id)[0].done = false:
-      todos.value.filter(todo => todo.id == id)[0].done = true;
+  const toggelDone = (id: string) => {
+    const index = todos.value.findIndex((todo: { id: string; } ) => todo.id === id)
+
+    updateDoc(doc(todosCollectionRef, id), {
+      done: !todos.value[index].done
+    })
   }
+
+  /*
+    get todos from firestore
+  */
+
+  onMounted(() => {
+    onSnapshot(todosCollectionRef, (querySnapshot:any) => {
+      const fbTodos:any = []
+      querySnapshot.forEach((doc:any) => {
+        const todo = {
+          id: doc.id,
+          content: doc.data().content,
+          done: doc.data().done
+        }
+        fbTodos.push(todo)
+      })
+      todos.value = fbTodos
+    })
+
+  })
 </script>
 
 
@@ -88,7 +119,7 @@
     text-align: center;
   }
 
-  .top div {
+  .top form {
     display: flex;
     gap: 0.5rem;
   }

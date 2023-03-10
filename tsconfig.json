@@ -1,12 +1,13 @@
 {
   "extends": "@vue/tsconfig/tsconfig.web.json",
-  "target": "ES2013",
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "target": "ES6",
+    "module": "ES2015"
   },
 
   "references": [
