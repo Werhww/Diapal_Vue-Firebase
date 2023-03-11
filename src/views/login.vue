@@ -1,45 +1,74 @@
 <template>
-    <form
-    class="login-form"
-    @submit.prevent="loginEmailPassword"
-    >
+    <div class="login-form">
         <h1>Sign in</h1>
 
         <div>
             <input type="email" placeholder="Email" v-model="newUserEmail">
             <input type="password" placeholder="Password" v-model="newUserPassword">
-            <button>Sign in</button>
+            <button
+            @click="loginEmailPassword"
+            :disabled="!newUserEmail || !newUserPassword"
+            >Log in</button>
+
+            <button
+            @click="createAccont"
+            :disabled="!newUserEmail || !newUserPassword"
+            >Sign Up</button>
         </div>
-    </form>
+    </div>
 </template>
 
 <script setup lang="ts">
-    /* 
-        Imports
-    */
 
-    import { ref } from 'vue'
-    import { connectAuthEmulator, signInWithEmailAndPassword } from 'firebase/auth'
-    import { auth } from '@/firebase' 
+/* 
+    Imports
+*/
 
-    
-    /* 
-        Firebase Authentification
-    */
-    const newUserEmail = ref('')
-    const newUserPassword = ref('')
+import { ref } from 'vue'
+import { 
+    connectAuthEmulator, 
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword
+} from 'firebase/auth'
+import { auth } from '@/firebase' 
 
 
-    connectAuthEmulator(auth, 'http://localhost:9099')
+/* 
+    Firebase Authentification
+*/
+const newUserEmail = ref('')
+const newUserPassword = ref('')
 
-    const loginEmailPassword = async () => {
-        const loginEmail = newUserEmail.value
-        const loginPassword = newUserPassword.value
 
+connectAuthEmulator(auth, 'http://localhost:9099')
+
+const loginEmailPassword = async () => {
+    const loginEmail = newUserEmail.value
+    const loginPassword = newUserPassword.value
+
+    try {
         const userCredential = await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
+        console.log(userCredential.user) 
 
-        console.log(userCredential.user)
+    } catch (error) {
+        console.log(error)
     }
+}
+
+
+const createAccont = async () => {
+    const loginEmail = newUserEmail.value
+    const loginPassword = newUserPassword.value
+
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, loginEmail, loginPassword)
+        console.log(userCredential.user) 
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 </script>
 
 <style scoped>
