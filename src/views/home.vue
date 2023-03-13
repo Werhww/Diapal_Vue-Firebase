@@ -23,7 +23,7 @@
         >
         <button 
           :disabled='!newTodoContent'
-          class="todoButton" 
+          class="todoButton"
         >Add</button>
       </form>
     </div>
@@ -38,15 +38,30 @@
 
   /*imports*/
     import { ref, onMounted } from 'vue'
-    import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, query, orderBy } from "firebase/firestore";
-    import { db } from '@/firebase' 
+    import { 
+      collection, 
+      onSnapshot, 
+      addDoc, 
+      deleteDoc, 
+      doc, 
+      updateDoc, 
+      query, 
+      orderBy,
+      
+      /* Firestore Emulator */
+      connectFirestoreEmulator
+    } from "firebase/firestore";
+    import { db, emulatorDB } from '@/firebase' 
+
+  /* Firestore Emualtor */
+  connectFirestoreEmulator(emulatorDB, 'localhost', 8080)
 
   /* 
     firebase refs
   */
-    const todosCollectionRef = collection(db, "todos")
-    const todosCollectionQuery = query(todosCollectionRef, orderBy("date", "desc"));
-
+  /* elmentorDB should be changed to db for production */
+  const todosCollectionRef = collection(emulatorDB, "todos")
+  const todosCollectionQuery = query(todosCollectionRef, orderBy("date", "desc"));
 
   /* todo items */
   const todos = ref([

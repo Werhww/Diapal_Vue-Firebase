@@ -26,21 +26,28 @@
 
 import { ref } from 'vue'
 import { 
-    connectAuthEmulator, 
     signInWithEmailAndPassword,
-    createUserWithEmailAndPassword
+    createUserWithEmailAndPassword,
+    onAuthStateChanged,
+
+    /* Authenticator Emulator */
+    connectAuthEmulator, 
 } from 'firebase/auth'
-import { auth } from '@/firebase' 
+import { auth } from '../firebase/index' 
 
-
+(auth as unknown as any)._canInitEmulator = true;
 /* 
     Firebase Authentification
 */
 const newUserEmail = ref('')
 const newUserPassword = ref('')
 
+/* Authenticator Emulator */
+connectAuthEmulator(auth, 'http://127.0.0.1:9099', {
+    disableWarnings: true,
+})
 
-connectAuthEmulator(auth, 'http://localhost:9099')
+
 
 const loginEmailPassword = async () => {
     const loginEmail = newUserEmail.value
@@ -49,12 +56,11 @@ const loginEmailPassword = async () => {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
         console.log(userCredential.user) 
-
     } catch (error) {
+        console.log("There Were An Error")
         console.log(error)
     }
 }
-
 
 const createAccont = async () => {
     const loginEmail = newUserEmail.value
@@ -62,11 +68,24 @@ const createAccont = async () => {
 
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, loginEmail, loginPassword)
-        console.log(userCredential.user) 
+        console.log(userCredential.user)
 
     } catch (error) {
+        console.log("There Were An Error")
         console.log(error)
     }
+}
+
+const monitorAuthState = async () => {
+    onAuthStateChanged(auth, user => {
+        if(user) {
+            console.log(user)
+            location.href = '/'
+        } 
+        else {
+            /* showLoginForm() */
+        }
+    })
 }
 
 </script>
