@@ -17,7 +17,4 @@ const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const db = getFirestore(app)
 
-// Emulator stuff ///
-const emulatorDB = getFirestore()
-
-export { db, auth, emulatorDB }
+export { db, auth}

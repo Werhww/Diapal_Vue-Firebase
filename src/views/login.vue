@@ -1,19 +1,36 @@
 <template>
     <div class="login-form">
-        <h1>Sign in</h1>
-
         <div>
-            <input type="email" placeholder="Email" v-model="newUserEmail">
-            <input type="password" placeholder="Password" v-model="newUserPassword">
-            <button
-            @click="loginEmailPassword"
-            :disabled="!newUserEmail || !newUserPassword"
-            >Log in</button>
+            <form 
+                v-if="creationType"
+                @submit.prevent="loginEmailPassword"
+            >
+                <h1>Log in</h1>
+                <input type="email" placeholder="Email" v-model="newUserEmail">
+                <input type="password" placeholder="Password" v-model="newUserPassword">
+                <button
+                :disabled="!newUserEmail || !newUserPassword"
+                >Log in</button>
+            </form>
 
-            <button
-            @click="createAccont"
-            :disabled="!newUserEmail || !newUserPassword"
-            >Sign Up</button>
+            <form 
+                v-if="!creationType"
+                @submit.prevent="createAccont"
+            >
+
+                <h1>Sign up</h1>
+                <input type="text" placeholder="Username" v-model="newUserUsername">
+                <input type="email" placeholder="Email" v-model="newUserEmail">
+                <input type="password" placeholder="Password" v-model="newUserPassword">
+                <button
+                :disabled="!newUserEmail || !newUserPassword || !newUserUsername"
+                >Log in</button>
+            </form>
+            
+            <a
+            href="#"
+            @click="creationType = !creationType"
+            >Sign Up</a>
         </div>
     </div>
 </template>
@@ -35,18 +52,19 @@ import {
 } from 'firebase/auth'
 import { auth } from '../firebase/index' 
 
-(auth as unknown as any)._canInitEmulator = true;
-/* 
-    Firebase Authentification
-*/
+
+/* Firebase Authentification */
+
+const creationType = ref(true)
+
 const newUserEmail = ref('')
 const newUserPassword = ref('')
+const newUserUsername = ref('')
 
 /* Authenticator Emulator */
 connectAuthEmulator(auth, 'http://127.0.0.1:9099', {
     disableWarnings: true,
 })
-
 
 
 const loginEmailPassword = async () => {
@@ -62,6 +80,7 @@ const loginEmailPassword = async () => {
     }
 }
 
+
 const createAccont = async () => {
     const loginEmail = newUserEmail.value
     const loginPassword = newUserPassword.value
@@ -75,6 +94,7 @@ const createAccont = async () => {
         console.log(error)
     }
 }
+
 
 const monitorAuthState = async () => {
     onAuthStateChanged(auth, user => {
@@ -99,6 +119,14 @@ const monitorAuthState = async () => {
 }
 
 .login-form > div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.login-form > div > form{
     display: flex;
     flex-direction: column;
     justify-content: center;

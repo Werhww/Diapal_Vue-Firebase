@@ -47,20 +47,13 @@
       updateDoc, 
       query, 
       orderBy,
-      
-      /* Firestore Emulator */
-      connectFirestoreEmulator
     } from "firebase/firestore";
-    import { db, emulatorDB } from '@/firebase' 
+    
+    import { db, } from '@/firebase' 
 
-  /* Firestore Emualtor */
-  connectFirestoreEmulator(emulatorDB, 'localhost', 8080)
 
-  /* 
-    firebase refs
-  */
-  /* elmentorDB should be changed to db for production */
-  const todosCollectionRef = collection(emulatorDB, "todos")
+  /* firebase refs */
+  const todosCollectionRef = collection(db, "todos")
   const todosCollectionQuery = query(todosCollectionRef, orderBy("date", "desc"));
 
   /* todo items */
