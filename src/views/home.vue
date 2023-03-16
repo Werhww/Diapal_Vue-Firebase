@@ -51,9 +51,6 @@ import {
 
 import { db } from '@/firebase' 
 
-// store from main.ts
-import { store } from '@/main'
-
 
 /* firebase refs */
 const todosCollectionRef = collection(db, "todos")
@@ -108,8 +105,6 @@ onMounted(() => {
     todos.value = fbTodos
   }) 
 })
-
-console.log(store.state.user)
   
 </script>
 

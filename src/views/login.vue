@@ -2,7 +2,7 @@
     <div class="login-form">
         <div>
             <form 
-                v-if="creationType"
+                v-if="showLoginForm"
                 @submit.prevent="loginEmailPassword"
             >
                 <h1>Log in</h1>
@@ -14,7 +14,7 @@
             </form>
 
             <form 
-                v-if="!creationType"
+                v-if="!showLoginForm"
                 @submit.prevent="createAccont"
             >
 
@@ -29,7 +29,7 @@
             
             <a
             href="#"
-            @click="creationType = !creationType"
+            @click="showLoginForm = !showLoginForm"
             >Sign Up</a>
         </div>
     </div>
@@ -48,28 +48,17 @@ import {
     onAuthStateChanged,
     updateProfile,
     signOut,
-
-    /* Authenticator Emulator */
-    connectAuthEmulator
 } from 'firebase/auth'
 import { auth } from '../firebase/index' 
-
-// store from main.ts
-import { store } from '@/main'
 
 
 /* Firebase Authentification */
 
-const creationType = ref(true)
+const showLoginForm = ref(true)
 
 const newUserEmail = ref('')
 const newUserPassword = ref('')
 const newUserUsername = ref('')
-
-/* Authenticator Emulator */
-connectAuthEmulator(auth, 'http://127.0.0.1:9099', {
-    disableWarnings: true,
-})
 
 
 const loginEmailPassword = async () => {
@@ -78,8 +67,6 @@ const loginEmailPassword = async () => {
 
     try {
         const userCredential = await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
-        store.commit('loggedIn', userCredential.user)
-        console.log("Loggin In data from store ", store.state.user)
         console.log(userCredential.user) 
     } catch (error) {
         console.log("There Were An Error")
@@ -95,26 +82,12 @@ const createAccont = async () => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, loginEmail, loginPassword)
         updateProfile(userCredential.user, { displayName: newUserUsername.value })
-        store.commit('loggedIn', userCredential.user)
         console.log(userCredential.user)
 
     } catch (error) {
         console.log("There Were An Error")
         console.log(error)
     }
-}
-
-
-const monitorAuthState = async () => {
-    onAuthStateChanged(auth, user => {
-        if(user) {
-            console.log(user)
-            location.href = '/'
-        } 
-        else {
-            /* showLoginForm() */
-        }
-    })
 }
 
 </script>

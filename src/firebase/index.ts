@@ -1,7 +1,12 @@
 // Firebase stuff ///
 import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth'
+import { 
+  getAuth,
+
+  /* Authenticator Emulator */
+  connectAuthEmulator
+} from 'firebase/auth'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyD44HyyUnZ-Z11RPR_WTq-tnH2idhydtX4',
@@ -16,5 +21,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const db = getFirestore(app)
+
+/* Authenticator Emulator */
+connectAuthEmulator(auth, 'http://127.0.0.1:9099', {
+  disableWarnings: true,
+})
 
 export { db, auth}
