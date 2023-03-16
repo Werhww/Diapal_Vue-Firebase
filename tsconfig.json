@@ -7,7 +7,7 @@
       "@/*": ["./src/*"]
     },
     "target": "ES6",
-    "module": "ES2022"
+    "module": "ES2015"
   },
 
   "references": [

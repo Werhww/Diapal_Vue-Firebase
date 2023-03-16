@@ -46,11 +46,16 @@ import {
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
     onAuthStateChanged,
+    updateProfile,
+    signOut,
 
     /* Authenticator Emulator */
-    connectAuthEmulator, 
+    connectAuthEmulator
 } from 'firebase/auth'
 import { auth } from '../firebase/index' 
+
+// store from main.ts
+import { store } from '@/main'
 
 
 /* Firebase Authentification */
@@ -73,6 +78,8 @@ const loginEmailPassword = async () => {
 
     try {
         const userCredential = await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
+        store.commit('loggedIn', userCredential.user)
+        console.log("Loggin In data from store ", store.state.user)
         console.log(userCredential.user) 
     } catch (error) {
         console.log("There Were An Error")
@@ -87,6 +94,8 @@ const createAccont = async () => {
 
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, loginEmail, loginPassword)
+        updateProfile(userCredential.user, { displayName: newUserUsername.value })
+        store.commit('loggedIn', userCredential.user)
         console.log(userCredential.user)
 
     } catch (error) {

@@ -36,75 +36,80 @@
 
 <script setup lang="ts">
 
-  /*imports*/
-    import { ref, onMounted } from 'vue'
-    import { 
-      collection, 
-      onSnapshot, 
-      addDoc, 
-      deleteDoc, 
-      doc, 
-      updateDoc, 
-      query, 
-      orderBy,
-    } from "firebase/firestore";
-    
-    import { db, } from '@/firebase' 
+/*imports*/
+import { ref, onMounted } from 'vue'
+import { 
+  collection, 
+  onSnapshot, 
+  addDoc, 
+  deleteDoc, 
+  doc, 
+  updateDoc, 
+  query, 
+  orderBy,
+} from "firebase/firestore";
+
+import { db } from '@/firebase' 
+
+// store from main.ts
+import { store } from '@/main'
 
 
-  /* firebase refs */
-  const todosCollectionRef = collection(db, "todos")
-  const todosCollectionQuery = query(todosCollectionRef, orderBy("date", "desc"));
+/* firebase refs */
+const todosCollectionRef = collection(db, "todos")
+const todosCollectionQuery = query(todosCollectionRef, orderBy("date", "desc"));
 
-  /* todo items */
-  const todos = ref([
+/* todo items */
+const todos = ref([
 
-  ]) as any
+]) as any
 
-  /*add todo */
-  const newTodoContent = ref() 
+/*add todo */
+const newTodoContent = ref() 
 
-  const addTodo = () => {
-    addDoc(todosCollectionRef, {
-      content: newTodoContent.value,
-      done: false, 
-      date: Date.now()
-    });
-    newTodoContent.value = '' 
-  }
+const addTodo = () => {
+  addDoc(todosCollectionRef, {
+    content: newTodoContent.value,
+    done: false, 
+    date: Date.now()
+  });
+  newTodoContent.value = '' 
+}
 
-  /* delete todo */
-  const deleteTodo = (id: string) => {
-    deleteDoc(doc(todosCollectionRef, id));
-  }
+/* delete todo */
+const deleteTodo = (id: string) => {
+  deleteDoc(doc(todosCollectionRef, id));
+}
 
-  /* mark todo as done */
-  const toggelDone = (id: string) => {
-      const index = todos.value.findIndex((todo: { id: string; } ) => todo.id === id)
+/* mark todo as done */
+const toggelDone = (id: string) => {
+    const index = todos.value.findIndex((todo: { id: string; } ) => todo.id === id)
 
-      updateDoc(doc(todosCollectionRef, id), {
-        done: !todos.value[index].done
-      })
-  }
+    updateDoc(doc(todosCollectionRef, id), {
+      done: !todos.value[index].done
+    })
+}
 
-  /*
-    get todos from firestore
-  */
+/*
+  get todos from firestore
+*/
 
-  onMounted(() => {
-    onSnapshot(todosCollectionQuery, (querySnapshot:any) => {
-      const fbTodos:any = []
-      querySnapshot.forEach((doc:any) => {
-        const todo = {
-          id: doc.id,
-          content: doc.data().content,
-          done: doc.data().done
-        }
-        fbTodos.push(todo)
-      })
-      todos.value = fbTodos
-    }) 
-  })
+onMounted(() => {
+  onSnapshot(todosCollectionQuery, (querySnapshot:any) => {
+    const fbTodos:any = []
+    querySnapshot.forEach((doc:any) => {
+      const todo = {
+        id: doc.id,
+        content: doc.data().content,
+        done: doc.data().done
+      }
+      fbTodos.push(todo)
+    })
+    todos.value = fbTodos
+  }) 
+})
+
+console.log(store.state.user)
   
 </script>
 
