@@ -11,6 +11,7 @@ import {
     updateProfile,
 } from 'firebase/auth'
 import { auth } from '../firebase/index' 
+import router from '@/router';
 
 
 /* Firebase Authentification */
@@ -26,6 +27,7 @@ const loginEmailPassword = async () => {
     const loginPassword = newUserPassword.value
     try {
         signInWithEmailAndPassword(auth, loginEmail, loginPassword)
+        router.push('/')
     } catch (error) {
         console.log("There Were An Error")
         console.log(error)
@@ -41,6 +43,7 @@ const createAccont = async () => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, createEmail, createPassword)
         updateProfile(userCredential.user, { displayName: createName })
+        router.push('/')
     } catch (error) {
         console.log("There Were An Error")
         console.log(error)
