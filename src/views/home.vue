@@ -1,40 +1,8 @@
-/* https://www.youtube.com/watch?v=84mhLKUM04E */
-/* Tid: 33:34 start på "Dispaly Todos from FireStore" */
-
-/* https://firebase.google.com/docs/firestore/query-data/get-data?hl=en&authuser=0 */
-/* https://console.firebase.google.com/u/0/project/diapal-firebase/firestore/data/~2Ftodos~2FRm14oBArm3XJHcASzoco */
-
-<script lang="ts">
-  import TodoItem from "../components/todoItem.vue";
-</script>
-
-<template>
-  <main>
-    <div class="top">
-      <h1>Todos</h1>
-      <form
-        @submit.prevent="addTodo"
-      >
-        <input 
-          v-model="newTodoContent" 
-          type="text"
-          class="todoInput" 
-          placeholder="Add a todo"
-        >
-        <button 
-          :disabled='!newTodoContent'
-          class="todoButton"
-        >Add</button>
-      </form>
-    </div>
-    <div class="todos">
-      <TodoItem :id="item.id" :todo="item.content" :done="item.done" :deleteFunction="deleteTodo" :toggelDone="toggelDone" v-for="item in todos"/>
-    </div>
-  </main>
-  
-</template>
-
 <script setup lang="ts">
+import TodoItem from "../components/todoItem.vue";
+import { 
+  onAuthStateChanged
+} from 'firebase/auth'
 
 /*imports*/
 import { ref, onMounted } from 'vue'
@@ -49,8 +17,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 
-import { db } from '@/firebase' 
-
+import { auth, db } from '@/firebase' 
 
 /* firebase refs */
 const todosCollectionRef = collection(db, "todos")
@@ -80,33 +47,73 @@ const deleteTodo = (id: string) => {
 
 /* mark todo as done */
 const toggelDone = (id: string) => {
-    const index = todos.value.findIndex((todo: { id: string; } ) => todo.id === id)
+  const index = todos.value.findIndex((todo: { id: string; } ) => todo.id === id)
 
-    updateDoc(doc(todosCollectionRef, id), {
-      done: !todos.value[index].done
-    })
+  updateDoc(doc(todosCollectionRef, id), {
+    done: !todos.value[index].done
+  })
 }
 
-/*
-  get todos from firestore
-*/
-
+/* get todos from firestore */
 onMounted(() => {
-  onSnapshot(todosCollectionQuery, (querySnapshot:any) => {
-    const fbTodos:any = []
-    querySnapshot.forEach((doc:any) => {
-      const todo = {
-        id: doc.id,
-        content: doc.data().content,
-        done: doc.data().done
-      }
-      fbTodos.push(todo)
+  try {
+    onSnapshot(todosCollectionQuery, (querySnapshot:any) => {
+      const TodoList:any = []
+      querySnapshot.forEach((doc:any) => {
+        const todo = {
+          id: doc.id,
+          content: doc.data().content,
+          done: doc.data().done
+        }
+        TodoList.push(todo)
+      })
+      todos.value = TodoList
     })
-    todos.value = fbTodos
-  }) 
+  } catch (error) {
+    console.log('Loggin needed')
+  }
 })
-  
+
+const loggedIn = ref(false)
+
+onAuthStateChanged(auth, (user)=>{
+  if(user){
+    loggedIn.value = true
+  } else{
+    loggedIn.value = false
+  }
+})
+
+
 </script>
+
+<template>
+  <main>
+    <div class="top" v-if="loggedIn">
+      <h1>Todos</h1>
+      <form
+        @submit.prevent="addTodo"
+      >
+        <input 
+          v-model="newTodoContent" 
+          type="text"
+          class="todoInput" 
+          placeholder="Add a todo"
+        >
+        <button 
+          :disabled='!newTodoContent'
+          class="todoButton"
+        >Add</button>
+      </form>
+    </div>
+    <div class="todos" v-if="loggedIn">
+      <TodoItem :id="item.id" :todo="item.content" :done="item.done" :deleteFunction="deleteTodo" :toggelDone="toggelDone" v-for="item in todos"/>
+    </div>
+    <div v-if="!loggedIn">
+      <h1>You need to be logged in to see your todos</h1>
+    </div>
+  </main>
+</template>
 
 <style scoped>
 main {

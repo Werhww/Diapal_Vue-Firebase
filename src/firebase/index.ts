@@ -23,8 +23,8 @@ const auth = getAuth(app)
 const db = getFirestore(app)
 
 /* Authenticator Emulator */
-connectAuthEmulator(auth, 'http://127.0.0.1:9099', {
+/* connectAuthEmulator(auth, 'http://127.0.0.1:9099', {
   disableWarnings: true,
-})
+}) */
 
-export { db, auth}
+export { db, auth }

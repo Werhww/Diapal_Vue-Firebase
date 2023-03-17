@@ -1,3 +1,54 @@
+<script setup lang="ts">
+
+/* 
+    Imports
+*/
+
+import { ref } from 'vue'
+import { 
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    updateProfile,
+} from 'firebase/auth'
+import { auth } from '../firebase/index' 
+
+
+/* Firebase Authentification */
+
+const showLoginForm = ref(true)
+
+const newUserEmail = ref('')
+const newUserPassword = ref('')
+const newUserUsername = ref('')
+
+const loginEmailPassword = async () => {
+    const loginEmail = newUserEmail.value
+    const loginPassword = newUserPassword.value
+    try {
+        signInWithEmailAndPassword(auth, loginEmail, loginPassword)
+    } catch (error) {
+        console.log("There Were An Error")
+        console.log(error)
+    }
+}
+
+
+const createAccont = async () => {
+    const createEmail = newUserEmail.value
+    const createPassword = newUserPassword.value
+    const createName = newUserUsername.value
+
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, createEmail, createPassword)
+        updateProfile(userCredential.user, { displayName: createName })
+    } catch (error) {
+        console.log("There Were An Error")
+        console.log(error)
+    }
+}
+
+</script>
+
 <template>
     <div class="login-form">
         <div>
@@ -34,63 +85,6 @@
         </div>
     </div>
 </template>
-
-<script setup lang="ts">
-
-/* 
-    Imports
-*/
-
-import { ref } from 'vue'
-import { 
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    onAuthStateChanged,
-    updateProfile,
-    signOut,
-} from 'firebase/auth'
-import { auth } from '../firebase/index' 
-
-
-/* Firebase Authentification */
-
-const showLoginForm = ref(true)
-
-const newUserEmail = ref('')
-const newUserPassword = ref('')
-const newUserUsername = ref('')
-
-
-const loginEmailPassword = async () => {
-    const loginEmail = newUserEmail.value
-    const loginPassword = newUserPassword.value
-
-    try {
-        const userCredential = await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
-        console.log(userCredential.user) 
-    } catch (error) {
-        console.log("There Were An Error")
-        console.log(error)
-    }
-}
-
-
-const createAccont = async () => {
-    const loginEmail = newUserEmail.value
-    const loginPassword = newUserPassword.value
-
-    try {
-        const userCredential = await createUserWithEmailAndPassword(auth, loginEmail, loginPassword)
-        updateProfile(userCredential.user, { displayName: newUserUsername.value })
-        console.log(userCredential.user)
-
-    } catch (error) {
-        console.log("There Were An Error")
-        console.log(error)
-    }
-}
-
-</script>
 
 <style scoped>
 .login-form{

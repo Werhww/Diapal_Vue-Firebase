@@ -1,8 +1,8 @@
 
 <script lang="ts">
-    export default {
-      props: ['todo', 'id', 'deleteFunction', 'done', 'toggelDone'],
-    }
+export default {
+  props: ['todo', 'id', 'deleteFunction', 'done', 'toggelDone'],
+}
 </script>
 
 <template>
